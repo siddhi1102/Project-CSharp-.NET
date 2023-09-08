@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../LabExam/TollPlazaMgr.js"></script>
+    <link rel="stylesheet" href="../css/mainStyle.css">
+    <script>
+        const tollMgr = new TollManager();
+
+        function onAddVehicle() {
+            const regNo = $("#txtRegNo").val();
+            const type = $("#slType").val();
+            const date = new Date($("txtNewDate").val());
+            // let FullDate = new Date($("#txtNewDate").val());
+            // const date = FullDate.getDate() + "/" + FullDate.getMonth() + "/" + FullDate.getFullYear();
+            let amt = 0;
+            switch (type) {
+                case "Bike": amt = 10; break;
+                case "Light Motor Vehicle": amt = 20; break;
+                case "Heavy Motor Vehicle": amt = 50; break;
+                case "Heavy Trucks": amt = 100; break;
+            }
+            const amount = amt;
+            Number($("#txtCalc").val(amount));
+            const vehicle = new TollPlaza(regNo, type, date, amount);
+            tollMgr.AddVehicles(vehicle);
+            alert("Amount Calculated Successfully!")
+        }
+
+        function getVehiclesByCategory() {
+            var type = prompt("Enter the type of Vehicle");
+            let list = tollMgr.findVehicleByCategory(type);
+            populate(list);
+        }
+
+        function getSumRegNo(){
+            let sum = 0;
+            let sumList = [];
+            let list = getVehiclesByRegistrationNo();
+            console.log(list);
+            list.forEach(vehicle => {
+                sum += vehicle.amount;
+            });
+            console.log(sum);
+            const amount = sum;
+            var obj = new TollPlaza(list[0].regNo, list[0].type, list[0].date, amount);
+            sumList.push(obj);
+            populate(sumList);
+        }
+
+        function getVehiclesByRegistrationNo() {
+            var regNo = prompt("Enter the Registration Number");
+            let list = tollMgr.findVehicleByRegistrationNo(regNo);
+            return list;
+        }
+
+        function getVehiclesByDate() {
+            var date = prompt("Enter the Date");
+            let list = tollMgr.findVehicleByDate(date);
+            return list;
+        }
+
+        const eventMapping = () => {
+            $("div").hide();
+            $("li>a:first").click(() => {
+                $("div").hide();
+                $("div:first").show();
+                populate(tollMgr.getVehicles());
+            });
+            $("li>a:eq(1)").click(() => {
+                $("div").hide();
+                $("div:eq(1)").show();
+            });
+            $("li>a:eq(2)").click(() => {
+                $("div").hide();
+                $("div:eq(2)").show();
+                getVehiclesByCategory();
+            });
+            $("li>a:eq(3)").click(() => {
+                $("div").hide();
+                $("div:eq(3)").show();
+                getSumRegNo();
+            });
+            $("li>a:last").click(() => {
+                $("div").hide();
+                $("div:last").show();
+                getVehiclesByDate();
+            });
+
+            $("button").click(onAddVehicle);
+        }
+
+        function populate(list) {
+            // const list = tollMgr.getVehicles();
+            $("table").find("tr:gt(0)").remove();
+            for (const rec of list) {
+                const tr = `<tr><td>${rec.regNo}</td>
+                    <td>${rec.type}</td>
+                    <td>${rec.amount}</td>
+                    <td>${rec.date}</td>
+                    </tr>`;
+                $("table").append(tr);
+            }
+        }
+
+        $().ready(() => {
+            eventMapping();
+        })
+
+    </script>
+</head>
+
+<body>
+    <h1>Navayuga Toll Plaza</h1>
+    <hr>
+    <nav>
+        <ul class="menu">
+            <li><a href="#">Display All Vehicles</a></li>
+            <li><a href="#">Calculate Toll Ticket Amount</a></li>
+            <li><a href="#">Find By category</a></li>
+            <li><a href="#">Find By Registration Number</a></li>
+            <li><a href="#">Find By Date</a></li>
+        </ul>
+    </nav>
+    <br />
+    <br />
+    <div>
+        <h2>List Of Vehicles</h2>
+        <table border="1">
+            <tr>
+                <th>Registration Number</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <section>
+            <h2>Calculate Amount</h2>
+            <p>
+                Enter the Registration Number: <input id="txtRegNo" />
+            </p>
+            <p>
+                Enter Vehicle Type: <select id="slType">
+                    <option>Bike</option>
+                    <option>Light Motor Vehicle</option>
+                    <option>Heavy Motor Vehicle</option>
+                    <option>Heavy Trucks</option>
+                </select>
+            </p>
+            <p>
+                Enter the Date: <input id="txtNewDate" type="date"/>
+            </p>
+            <p>
+                <button>Calculate Amount</button>
+            </p>
+            <hr>
+            <p>
+                Calculated Amount is: <input id="txtCalc" type="number" disabled="true" />
+            </p>
+        </section>
+    </div>
+    <div>
+        <h2>Vehicles by Category</h2>
+        <table border="1">
+            <tr>
+                <th>Registration Number</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <h2>Vehicles by Registration Number</h2>
+        <table border="1">
+            <tr>
+                <th>Registration Number</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <h2>Vehicles by Date</h2>
+        <table border="1">
+            <tr>
+                <th>Registration Number</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
